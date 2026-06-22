@@ -11,5 +11,4 @@ data class PackingItemEntity(
     val name: String,
     val isChecked: Boolean = false,
     val isAutoSuggested: Boolean = false,
-    val rating: String = "NONE" // USED, NOT_NEEDED, SHOULD_HAVE_BROUGHT, NONE
 )
