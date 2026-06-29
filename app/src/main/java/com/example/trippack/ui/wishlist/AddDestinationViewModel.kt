@@ -43,6 +43,15 @@ class AddDestinationViewModel @Inject constructor(
             _uiState.value = state.copy(errorMessage = "Nama destinasi tidak boleh kosong")
             return
         }
+        val budget = if (state.estimatedBudget.isBlank()) {
+            0.0
+        } else {
+            state.estimatedBudget.toDoubleOrNull()
+        }
+        if (budget == null) {
+            _uiState.value = state.copy(errorMessage = "Budget harus berupa angka yang valid")
+            return
+        }
         viewModelScope.launch {
             val destination = Destination(
                 name = state.name,

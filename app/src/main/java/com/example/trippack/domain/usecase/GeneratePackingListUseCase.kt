@@ -10,6 +10,7 @@ class GeneratePackingListUseCase @Inject constructor(
     private val packingItemRepository: PackingItemRepository
 ) {
     suspend operator fun invoke(tripId: Int, weather: Weather) {
+        packingItemRepository.deleteAutoSuggestedItemsForTrip(tripId)
         val suggestedItems = PackingRuleSet.rules.filter { it.condition(weather) }.map { rule ->
             PackingItem(
                 tripId = tripId,

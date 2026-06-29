@@ -60,7 +60,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(horizontal = 24.dp, vertical = 32.dp),
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 StatItem(Modifier.weight(1f), uiState.wishlistCount, "Wishlist", Icons.Outlined.FavoriteBorder)
@@ -107,7 +107,7 @@ fun HomeScreen(
 
             if (uiState.previewDestinations.isEmpty()) {
                 Text(
-                    "Belum ada destinasi di wishlist — yuk tambahkan impianmu",
+                    "Belum ada destinasi di wishlist, yuk tambahkan impianmu",
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     fontSize = 13.sp
                 )

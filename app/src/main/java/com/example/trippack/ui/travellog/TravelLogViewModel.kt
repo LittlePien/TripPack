@@ -1,5 +1,6 @@
 package com.example.trippack.ui.travellog
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trippack.domain.model.Trip
@@ -13,8 +14,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
-import kotlin.math.exp
 
 data class TravelLogUiState(
     val allTrips: List<Trip> = emptyList(),
@@ -27,7 +30,9 @@ class TravelLogViewModel @Inject constructor(
     private val getTravelLogUseCase: GetTravelLogUseCase,
     private val completeTripUseCase: CompleteTripUseCase
 ) : ViewModel() {
+
     private val _expandedTripId = MutableStateFlow<Int?>(null)
+
     val uiState: StateFlow<TravelLogUiState> = combine(
         tripRepository.getAllTrips(),
         _expandedTripId
@@ -54,4 +59,7 @@ class TravelLogViewModel @Inject constructor(
             tripRepository.deleteTrip(trip)
         }
     }
+
+    fun formatDate(millis: Long): String =
+        SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID")).format(Date(millis))
 }

@@ -12,7 +12,7 @@ import javax.inject.Inject
 class PackingItemRepositoryImpl @Inject constructor(
     private val dao: PackingItemDao
 ) : PackingItemRepository {
-    override fun getPackingItemsByyTripId(tripId: Int): Flow<List<PackingItem>> {
+    override fun getPackingItemsByTripId(tripId: Int): Flow<List<PackingItem>> {
         return dao.getPackingItemsByTripId(tripId).map { list -> list.map { it.toDomain() } }
     }
 
@@ -34,5 +34,9 @@ class PackingItemRepositoryImpl @Inject constructor(
 
     override suspend fun deleteAllForTrip(tripId: Int) {
         dao.deleteAllItemsForTrip(tripId)
+    }
+
+    override suspend fun deleteAutoSuggestedItemsForTrip(tripId: Int) {
+        dao.deleteAutoSuggestedItemsForTrip(tripId)
     }
 }

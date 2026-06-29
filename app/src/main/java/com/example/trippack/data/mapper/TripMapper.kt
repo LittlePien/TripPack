@@ -11,6 +11,8 @@ fun TripEntity.toDomain(): Trip {
         tripType = tripType,
         startDate = startDate,
         endDate = endDate,
+        travelerCount = travelerCount,
+        estimatedBudget = estimatedBudget,
         isCompleted = isCompleted,
         createdAt = createdAt
     )
@@ -24,6 +26,8 @@ fun Trip.toEntity(): TripEntity {
         tripType = tripType,
         startDate = startDate,
         endDate = endDate,
+        travelerCount = travelerCount,
+        estimatedBudget = estimatedBudget,
         isCompleted = isCompleted,
         createdAt = createdAt
     )

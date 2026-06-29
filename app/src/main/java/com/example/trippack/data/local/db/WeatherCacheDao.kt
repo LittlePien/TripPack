@@ -5,7 +5,7 @@ import com.example.trippack.data.local.entity.WeatherCacheEntity
 
 @Dao
 interface WeatherCacheDao {
-    @Query("SELECT * FROM weather_cache WHERE cityName = :cityName")
+    @Query("SELECT * FROM weather_cache WHERE LOWER(cityName) = LOWER(:cityName)")
     suspend fun getWeatherByCity(cityName: String): WeatherCacheEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

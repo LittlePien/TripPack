@@ -18,7 +18,9 @@ class WeatherRepositoryImpl @Inject constructor(
 ) : WeatherRepository {
     override suspend fun getWeatherForcity(cityName: String): Result<Weather> {
         return try {
-            val cached = dao.getWeatherByCity(cityName)
+            val normalizedCity = cityName.trim().lowercase()
+            dao.deleteExpiredCache(System.currentTimeMillis() - CACHE_DURATION_MS)
+            val cached = dao.getWeatherByCity(normalizedCity)
             val isFresh = cached != null && (System.currentTimeMillis() - cached.cachedAt) < CACHE_DURATION_MS
             if (cached != null && isFresh) {
                 return Result.success(cached.toDomain())
@@ -41,7 +43,7 @@ class WeatherRepositoryImpl @Inject constructor(
                 apiKey = BuildConfig.OPEN_WEATHER_API_KEY
             )
             val weather = Weather(
-                cityName = cityName,
+                cityName = normalizedCity,
                 temperature = response.main.temp,
                 condition = response.weather.firstOrNull()?.main ?: "Unknown",
                 humidity = response.main.humidity,
@@ -57,8 +59,9 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override suspend fun refreshWeatherForCity(cityName: String): Result<Weather> {
         return try {
+            val normalizedCity = cityName.trim().lowercase()
             val geocodeResult = geocodingApi.searchLocation(
-                query = cityName,
+                query = normalizedCity,
                 apiKey = BuildConfig.OPEN_WEATHER_API_KEY
             )
 
@@ -76,7 +79,7 @@ class WeatherRepositoryImpl @Inject constructor(
             )
 
             val weather = Weather(
-                cityName = cityName,
+                cityName = normalizedCity,
                 temperature = response.main.temp,
                 condition = response.weather.firstOrNull()?.main ?: "Unknown",
                 humidity = response.main.humidity,

@@ -38,7 +38,7 @@ fun WishlistHeader(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primary)
             .statusBarsPadding()
-            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 12.dp)
+            .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
         Column {
             Text(

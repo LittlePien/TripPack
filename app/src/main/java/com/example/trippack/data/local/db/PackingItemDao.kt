@@ -23,4 +23,7 @@ interface PackingItemDao {
 
     @Query("DELETE FROM packing_items WHERE tripId = :tripId")
     suspend fun deleteAllItemsForTrip(tripId: Int)
+
+    @Query("DELETE FROM packing_items WHERE tripId = :tripId AND isAutoSuggested = 1")
+    suspend fun deleteAutoSuggestedItemsForTrip(tripId: Int)
 }

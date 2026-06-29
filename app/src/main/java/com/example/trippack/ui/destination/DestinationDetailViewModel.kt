@@ -3,10 +3,12 @@ package com.example.trippack.ui.destination
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.example.trippack.domain.model.Destination
 import com.example.trippack.domain.model.Weather
 import com.example.trippack.domain.repository.DestinationRepository
 import com.example.trippack.domain.usecase.GetWeatherUseCase
+import com.example.trippack.ui.navigation.DestinationDetail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,9 +29,10 @@ class DestinationDetailViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val destinationId: Int = savedStateHandle.get<String>("destinationId")?.toIntOrNull() ?: 0
+    private val destinationId: Int = savedStateHandle.toRoute<DestinationDetail>().destinationId
     private val _uiState = MutableStateFlow(DestinationDetailUiState())
     val uiState: StateFlow<DestinationDetailUiState> = _uiState
+
     init {
         loadDestination()
     }
@@ -38,7 +41,7 @@ class DestinationDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val destination = destinationRepository.getDestinationsById(destinationId)
             _uiState.value = _uiState.value.copy(destination = destination, isLoadingDestination = false)
-            destination?.let {loadWeather(it.name)}
+            destination?.let { loadWeather(it.name) }
         }
     }
 

@@ -14,7 +14,7 @@ import com.example.trippack.data.local.entity.DestinationEntity
         PackingItemEntity::class,
         WeatherCacheEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class TripPackDatabase : RoomDatabase() {

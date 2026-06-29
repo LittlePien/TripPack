@@ -86,7 +86,7 @@ fun CreateTripScreen(
             }
             if (uiState.destinations.isEmpty()) {
                 Text(
-                    "Belum ada destinasi di wishlist — tambahkan dulu dari halaman Wishlist",
+                    "Belum ada destinasi di wishlist, tambahkan dulu dari halaman Wishlist",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                 )

@@ -3,13 +3,16 @@ package com.example.trippack.ui.trip
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.example.trippack.domain.model.Destination
 import com.example.trippack.domain.model.Trip
 import com.example.trippack.domain.repository.DestinationRepository
 import com.example.trippack.domain.repository.TripRepository
+import com.example.trippack.domain.scheduler.TripScheduler
 import com.example.trippack.domain.usecase.GeneratePackingListUseCase
 import com.example.trippack.domain.usecase.GetWeatherUseCase
 import com.example.trippack.domain.usecase.SaveTripUseCase
+import com.example.trippack.ui.navigation.CreateTrip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,9 +38,10 @@ class CreateTripViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
     private val generatePackingListUseCase: GeneratePackingListUseCase,
     private val tripRepository: TripRepository,
+    private val tripScheduler: TripScheduler,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val editingTripId: Int? = savedStateHandle.get<String>("tripId")?.toIntOrNull()
+    private val editingTripId: Int? = savedStateHandle.toRoute<CreateTrip>().tripId
     private val _uiState = MutableStateFlow(CreateTripUiState())
     val uiState: StateFlow<CreateTripUiState> = _uiState
 
@@ -56,7 +60,9 @@ class CreateTripViewModel @Inject constructor(
                     _uiState.value = _uiState.value.copy(
                         selectedDestination = destination,
                         startDate = trip.startDate,
-                        endDate = trip.endDate
+                        endDate = trip.endDate,
+                        travelerCount = trip.travelerCount,
+                        estimatedBudget = trip.estimatedBudget.toLong().toString()
                     )
                 }
             }
@@ -68,11 +74,18 @@ class CreateTripViewModel @Inject constructor(
     }
 
     fun onStartDateChange(date: Long) {
-        _uiState.value = _uiState.value.copy(startDate = date)
+        val current = _uiState.value
+        val newEndDate = if (current.endDate != null && date > current.endDate) null else current.endDate
+        _uiState.value = current.copy(startDate = date, endDate = newEndDate, errorMessage = null)
     }
 
     fun onEndDateChange(date: Long) {
-        _uiState.value = _uiState.value.copy(endDate = date)
+        val current = _uiState.value
+        if (current.startDate != null && date < current.startDate) {
+            _uiState.value = current.copy(errorMessage = "Tanggal pulang tidak boleh sebelum tanggal berangkat")
+            return
+        }
+        _uiState.value = current.copy(endDate = date, errorMessage = null)
     }
 
     fun onTravelerCountChange(count: Int) {
@@ -90,6 +103,7 @@ class CreateTripViewModel @Inject constructor(
     }
 
     fun createTrip() {
+        if (_uiState.value.isSaving) return
         val state = _uiState.value
         val destination = state.selectedDestination
 
@@ -99,6 +113,10 @@ class CreateTripViewModel @Inject constructor(
         }
         if (state.startDate == null || state.endDate == null) {
             _uiState.value = state.copy(errorMessage = "Pilih tanggal berangkat dan pulang terlebih dahulu")
+            return
+        }
+        if (state.endDate < state.startDate) {
+            _uiState.value = state.copy(errorMessage = "Tanggal pulang tidak boleh sebelum tanggal berangkat")
             return
         }
 
@@ -112,9 +130,16 @@ class CreateTripViewModel @Inject constructor(
                         destinationId = destination.id,
                         destinationName = destination.name,
                         startDate = state.startDate,
-                        endDate = state.endDate
+                        endDate = state.endDate,
+                        travelerCount = state.travelerCount,
+                        estimatedBudget = state.estimatedBudget.toDoubleOrNull() ?: 0.0
                     )
                     tripRepository.updateTrip(updated)
+
+                    val weatherResult = getWeatherUseCase(destination.name)
+                    weatherResult.onSuccess { weather ->
+                        generatePackingListUseCase(editingTripId, weather)
+                    }
                 }
                 _uiState.value = _uiState.value.copy(isSaving = false, createdTripId = editingTripId)
             } else {
@@ -123,7 +148,9 @@ class CreateTripViewModel @Inject constructor(
                     destinationName = destination.name,
                     tripType = "Liburan",
                     startDate = state.startDate,
-                    endDate = state.endDate
+                    endDate = state.endDate,
+                    travelerCount = state.travelerCount,
+                    estimatedBudget = state.estimatedBudget.toDoubleOrNull() ?: 0.0
                 )
 
                 val tripId = saveTripUseCase(trip)
@@ -131,6 +158,7 @@ class CreateTripViewModel @Inject constructor(
                 weatherResult.onSuccess { weather ->
                     generatePackingListUseCase(tripId, weather)
                 }
+                tripScheduler.scheduleTripReminder(destination.name, state.startDate)
                 _uiState.value = _uiState.value.copy(isSaving = false, createdTripId = tripId)
             }
         }

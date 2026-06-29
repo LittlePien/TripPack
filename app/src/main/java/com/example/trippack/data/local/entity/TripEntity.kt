@@ -12,6 +12,8 @@ data class TripEntity (
     val tripType: String,
     val startDate: Long,
     val endDate: Long,
+    val travelerCount: Int = 1,
+    val estimatedBudget: Double = 0.0,
     val isCompleted: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 )

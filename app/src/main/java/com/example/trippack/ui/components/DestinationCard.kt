@@ -78,7 +78,7 @@ fun DestinationCard(
             if (destination.estimatedBudget > 0) {
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    "Estimatsi: Rp${"%,.0f".format(destination.estimatedBudget)}",
+                    "Estimasi: Rp${"%,.0f".format(destination.estimatedBudget)}",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium

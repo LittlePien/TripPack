@@ -17,6 +17,7 @@ data class ProfileUiState(
     val name: String = "",
     val email: String = "",
     val tripCount: Int = 0,
+    val completedCount: Int = 0,
     val destinationCount: Int = 0
 )
 
@@ -27,14 +28,17 @@ class ProfileViewModel @Inject constructor(
     private val destinationRepository: DestinationRepository,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
+
     val uiState: StateFlow<ProfileUiState> = combine(
         tripRepository.getAllTrips(),
+        tripRepository.getCompletedTrips(),
         destinationRepository.getAllDestinations()
-    ) { trips, destinations ->
+    ) { trips, completed, destinations ->
         ProfileUiState(
             name = firebaseAuth.currentUser?.displayName ?: "Traveler",
             email = firebaseAuth.currentUser?.email ?: "",
             tripCount = trips.size,
+            completedCount = completed.size,
             destinationCount = destinations.size
         )
     }.stateIn(
