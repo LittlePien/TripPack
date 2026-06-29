@@ -86,4 +86,5 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp.logging)
     implementation(libs.work.runtime.ktx)
+    implementation(libs.androidx.datastore.preferences)
 }

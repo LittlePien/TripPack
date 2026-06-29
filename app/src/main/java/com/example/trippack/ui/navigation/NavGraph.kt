@@ -3,21 +3,19 @@ package com.example.trippack.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.example.trippack.ui.auth.LoginScreen
 import com.example.trippack.ui.auth.RegisterScreen
 import com.example.trippack.ui.destination.DestinationDetailScreen
 import com.example.trippack.ui.home.HomeScreen
 import com.example.trippack.ui.packing.PackingListScreen
 import com.example.trippack.ui.profile.ProfileScreen
+import com.example.trippack.ui.settings.SettingsScreen
 import com.example.trippack.ui.travellog.TravelLogScreen
 import com.example.trippack.ui.trip.CreateTripScreen
 import com.example.trippack.ui.wishlist.AddDestinationScreen
 import com.example.trippack.ui.wishlist.WishlistScreen
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -116,7 +114,16 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
                     navController.navigate(Login) {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Settings)
                 }
+            )
+        }
+
+        composable<Settings> {
+            SettingsScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

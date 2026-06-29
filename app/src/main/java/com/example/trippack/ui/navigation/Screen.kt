@@ -9,7 +9,8 @@ import kotlinx.serialization.Serializable
 @Serializable object AddDestination
 @Serializable object TravelLog
 @Serializable object Profile
+@Serializable object Settings
 
 @Serializable data class DestinationDetail(val destinationId: Int)
 @Serializable data class PackingList(val tripId: Int)
-@Serializable data class CreateTrip(val tripId: Int? = null)  // null = create mode, non-null = edit mode
+@Serializable data class CreateTrip(val tripId: Int? = null)
