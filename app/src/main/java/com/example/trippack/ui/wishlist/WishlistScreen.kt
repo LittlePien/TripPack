@@ -63,7 +63,7 @@ fun WishlistScreen(
                             .verticalScroll(rememberScrollState())
                             .padding(top = 16.dp)
                     ) {
-                        WishlistEmptyState()
+                        WishlistEmptyState(onAddClick = onNavigateToAddDestination)
                     }
                 }
                 uiState.destinations.isEmpty() -> {

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun WishlistEmptyState() {
+fun WishlistEmptyState(onAddClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,6 +54,10 @@ fun WishlistEmptyState() {
             textAlign = TextAlign.Center,
             lineHeight = 20.sp
         )
-
+        Spacer(modifier = Modifier.height(24.dp))
+        DestinationButton(
+            onClick = onAddClick,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
     }
 }
